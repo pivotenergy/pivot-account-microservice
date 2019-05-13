@@ -4,6 +4,7 @@ import com.auth0.jwt.JWTCreator;
 import com.pivotenergy.domain.User;
 import com.pivotenergy.domain.UserRefreshToken;
 import com.pivotenergy.exceptions.PivotAuthenticationFailureException;
+import com.pivotenergy.exceptions.PivotEntityNotFoundException;
 import com.pivotenergy.repositories.UserRefreshTokenRepository;
 import com.pivotenergy.repositories.UserRepository;
 import com.pivotenergy.security.JWTSecurityService;
@@ -89,6 +90,11 @@ public class AuthenticationService {
     public TokenPair loginUser(UserLogin userLogin) {
         return userRepository.findByUserEmail(userLogin.getEmail())
                 .map(user -> {
+
+                    if(user.getGroup().getDeleted().equals(Boolean.TRUE)) {
+                        throw new PivotEntityNotFoundException(User.class, user.getId());
+                    }
+
                     LocalDateTime current = LocalDateTime.now();
                     OffsetDateTime offset = OffsetDateTime.now(Clock.systemDefaultZone());
                     user.setLastLoginAttempt(Date.from(current.toInstant(offset.getOffset())));
@@ -106,6 +112,10 @@ public class AuthenticationService {
     }
 
     private TokenPair doLoginUser(User user) {
+
+        if(user.getGroup().getDeleted().equals(Boolean.TRUE)) {
+            throw new PivotEntityNotFoundException(User.class, user.getId());
+        }
 
         UserSession userSession = new UserSession();
         userSession.setId(user.getId());

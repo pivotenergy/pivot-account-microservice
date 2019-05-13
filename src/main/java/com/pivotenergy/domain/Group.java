@@ -21,6 +21,7 @@
 package com.pivotenergy.domain;
 
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 import org.hibernate.validator.constraints.URL;
 
 import javax.persistence.*;
@@ -65,6 +66,7 @@ public class Group extends BaseDomainEntity<Group> {
     private Type type = Type.CLIENT;
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Where(clause="deleted = false")
     @PrimaryKeyJoinColumn
     private Set<User> users = new HashSet<>();
 

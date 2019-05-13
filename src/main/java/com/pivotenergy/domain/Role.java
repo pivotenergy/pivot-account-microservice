@@ -26,14 +26,12 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.Assert;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @SuppressWarnings("unused")
 @Entity
 @NoArgsConstructor
 public class Role extends MultiTenantBaseDomainEntity<Role> {
-    @NotBlank
     @Column(name = "role", nullable = false, length = 128)
     private String role;
 
