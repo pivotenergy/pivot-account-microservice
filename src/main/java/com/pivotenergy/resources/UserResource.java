@@ -67,7 +67,6 @@ public class UserResource {
 
     @GetMapping(path = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('ROLE_SUPPORT_UPDATE_USER')")
     public @ResponseBody
     User getById(@PathVariable String id) {
         return userService.getById(id);

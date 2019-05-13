@@ -38,6 +38,7 @@ public class GroupResource {
 
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ROLE_SUPPORT_READ_USER')")
     public @ResponseBody
     Page<Group> getCollection(@PageableDefault Pageable pageable) {
         return groupService.getGroupRepository().findAll(pageable);
