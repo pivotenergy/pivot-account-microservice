@@ -34,6 +34,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @SuppressWarnings("unused")
@@ -220,6 +221,16 @@ public class User extends MultiTenantBaseDomainEntity<User> {
     public User setGroup(Group group) {
         this.group = group;
         return this;
+    }
+
+    @JsonIgnore
+    public boolean isValid() {
+        return enabled && !locked && !expired && Objects.nonNull(password);
+    }
+
+    @JsonIgnore
+    public boolean isLocked() {
+        return locked;
     }
 
     public enum Type {

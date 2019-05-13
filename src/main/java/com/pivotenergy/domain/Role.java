@@ -100,6 +100,7 @@ public class Role extends MultiTenantBaseDomainEntity<Role> {
 
     public Role setUser(User user) {
         this.user = user;
+        this.groupId = user.getGroup().id;
         return this;
     }
 
