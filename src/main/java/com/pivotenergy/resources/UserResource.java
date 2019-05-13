@@ -13,7 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -40,21 +39,21 @@ public class UserResource {
     @ResponseStatus(HttpStatus.OK)
     public @ResponseBody
     Page<User> getCollection(@PageableDefault Pageable pageable) {
-        return userService.getUserRepository().findAll(pageable);
+        return userService.getRepository().findAll(pageable);
     }
 
     @PutMapping(path = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PreAuthorize("hasRole('ROLE_SUPPORT_UPDATE_USER')")
     public @ResponseBody
-    User updateById(@PathVariable String id, @RequestBody User user) {
+    User updateById(@PathVariable String id, @RequestBody User user) throws Throwable {
         return userService.update(id, user);
     }
 
     @PatchMapping(path = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @ResponseStatus(HttpStatus.ACCEPTED)
     public @ResponseBody
-    User patchById(@PathVariable String id, @RequestBody Map<String, Object> patch) throws IOException {
+    User patchById(@PathVariable String id, @RequestBody Map<String, Object> patch) throws Throwable {
         return userService.patch(id, patch);
     }
 
@@ -68,7 +67,7 @@ public class UserResource {
     @GetMapping(path = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public @ResponseBody
-    User getById(@PathVariable String id) {
+    User getById(@PathVariable String id) throws Throwable {
         return userService.getById(id);
     }
 
@@ -80,14 +79,14 @@ public class UserResource {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ROLE_SUPPORT_UPDATE_USER')")
     public @ResponseBody
-    Role addRole(@PathVariable String id, @RequestBody @Valid Role role) {
+    Role addRole(@PathVariable String id, @RequestBody @Valid Role role) throws Throwable {
         return userService.addRole(id, role);
     }
 
     @DeleteMapping(path = "/{id}/roles/{roleId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ROLE_SUPPORT_UPDATE_USER')")
-    public void deleteRole(@PathVariable String id, @PathVariable String roleId) {
+    public void deleteRole(@PathVariable String id, @PathVariable String roleId) throws Throwable {
         userService.deleteRole(id, roleId);
     }
 

@@ -13,7 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -41,21 +40,21 @@ public class GroupResource {
     @PreAuthorize("hasRole('ROLE_SUPPORT_READ_USER')")
     public @ResponseBody
     Page<Group> getCollection(@PageableDefault Pageable pageable) {
-        return groupService.getGroupRepository().findAll(pageable);
+        return groupService.getRepository().findAll(pageable);
     }
 
     @PutMapping(path = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PreAuthorize("hasRole('ROLE_SUPPORT_UPDATE_USER')")
     public @ResponseBody
-    Group updateById(@PathVariable String id, @RequestBody Group group) {
+    Group updateById(@PathVariable String id, @RequestBody Group group) throws Throwable {
         return groupService.update(id, group);
     }
 
     @PatchMapping(path = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @ResponseStatus(HttpStatus.ACCEPTED)
     public @ResponseBody
-    Group patchyId(@PathVariable String id, @RequestBody Map<String, Object> patch) throws IOException {
+    Group patchyId(@PathVariable String id, @RequestBody Map<String, Object> patch) throws Throwable {
         return groupService.patch(id, patch);
     }
 
@@ -69,7 +68,7 @@ public class GroupResource {
     @GetMapping(path = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public @ResponseBody
-    Group getById(@PathVariable String id) {
+    Group getById(@PathVariable String id) throws Throwable {
         return groupService.getById(id);
     }
 
@@ -81,7 +80,7 @@ public class GroupResource {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ROLE_SUPPORT_CREATE_USER')")
     public @ResponseBody
-    User addUser(@PathVariable String id, @RequestBody @Valid User user) {
+    User addUser(@PathVariable String id, @RequestBody @Valid User user) throws Throwable {
         return groupService.addUser(id, user);
     }
 

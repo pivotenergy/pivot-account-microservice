@@ -24,14 +24,14 @@ package com.pivotenergy.repositories;
 import com.pivotenergy.domain.Role;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Repository
-public interface RoleRepository extends CrudRepository<Role, String> {
+public interface RoleRepository extends PagingAndSortingRepository<Role, String> {
 
     /**
      * Returns the number of entities available.

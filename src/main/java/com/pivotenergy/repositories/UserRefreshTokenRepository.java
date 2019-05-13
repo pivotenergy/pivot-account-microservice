@@ -3,14 +3,14 @@ package com.pivotenergy.repositories;
 import com.pivotenergy.domain.UserRefreshToken;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Repository
-public interface UserRefreshTokenRepository extends CrudRepository<UserRefreshToken, Long> {
+public interface UserRefreshTokenRepository extends PagingAndSortingRepository<UserRefreshToken, Long> {
     Optional<UserRefreshToken> findByToken(String token);
 
     @Transactional

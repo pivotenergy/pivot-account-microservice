@@ -30,7 +30,7 @@ public class AuthenticationResource {
 
     @PostMapping(path = "/refresh/{token}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    ResponseEntity<TokenPair> refresh(@PathVariable String token) {
+    public ResponseEntity<TokenPair> refresh(@PathVariable String token) {
         TokenPair tokenPair = authenticationService.refreshAccessToken(token)
                 .orElseThrow(PivotRefreshTokenException::new);
 
@@ -39,11 +39,11 @@ public class AuthenticationResource {
 
     @DeleteMapping(path = "/logout/{token}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void logout(@PathVariable String token) {
+    public void logout(@PathVariable String token) {
         authenticationService.logoutUser(token);
     }
 
-    ResponseEntity<TokenPair> sendTokenPairAndHeaders(TokenPair tokenPair) {
+    private ResponseEntity<TokenPair> sendTokenPairAndHeaders(TokenPair tokenPair) {
         HttpHeaders headers = new HttpHeaders();
         headers.set(JWTSecurityService.AUTHORIZATION_HEADER, tokenPair.getBearerToken());
         headers.set(AUTHORIZATION_REFRESH, tokenPair.getRefreshToken());

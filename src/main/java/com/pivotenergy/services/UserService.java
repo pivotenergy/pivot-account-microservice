@@ -8,8 +8,6 @@ import com.pivotenergy.exceptions.PivotEntityNotFoundException;
 import com.pivotenergy.repositories.RoleRepository;
 import com.pivotenergy.repositories.UserRepository;
 import com.pivotenergy.security.model.UserSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,122 +15,56 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import static com.pivotenergy.domain.Role.Action.*;
-import static com.pivotenergy.domain.Role.Scope.ROLE_ADMIN;
-import static com.pivotenergy.domain.Role.Scope.ROLE_SUPPORT;
-import static com.pivotenergy.domain.Role.Target.GLOBAL;
-import static com.pivotenergy.domain.Role.Target.USERS;
+import static com.pivotenergy.domain.Role.Scope.*;
+import static com.pivotenergy.domain.Role.Target.*;
 
 @Service
-public class UserService {
-    private Logger LOG = LoggerFactory.getLogger(UserService.class);
-
-    private UserRepository userRepository;
+public class UserService extends BaseService<User, UserRepository> {
     private RoleRepository roleRepository;
 
     @Autowired
     UserService(UserRepository userRepository, RoleRepository roleRepository) {
-        this.userRepository = userRepository;
+        super(User.class, userRepository);
         this.roleRepository = roleRepository;
     }
 
-    public UserRepository getUserRepository() {
-        return userRepository;
-    }
-
-    @Transactional(readOnly = true)
-    public User getById(String id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(new PivotEntityNotFoundException(User.class, id));
-
-        if(user.getGroup().getDeleted().equals(Boolean.TRUE)) {
-            throw new PivotEntityNotFoundException(User.class, id);
-        }
-
-        if(isAdminOrSupportRequest(user)) {
-            return user;
-        }
-        else if(isOwnerRequest(user)) {
-            return user;
-        }
-
-        String message = String.format("Either this resource does not belong to you or you do not have the " +
-                "privileges required to modify this resource.");
-        throw new AccessDeniedException("Request Denied", new Throwable(message));
-    }
-
+    @Override
     @Transactional
-    public User create(User user) {
-        return userRepository.save(user);
-    }
+    public User patch(String id, Map<String, Object> patch) throws Throwable {
 
-    @Transactional
-    public User update(String id, User update) {
-        if(!userRepository.existsById(id)){
-            throw new PivotEntityNotFoundException(User.class, id);
-        }
-
-        return userRepository.save(update);
-    }
-
-    @Transactional
-    public User patch(String id, Map<String, Object> patch) throws IOException {
-
-        User incumbent = userRepository.findById(id)
-                .orElseThrow(new PivotEntityNotFoundException(User.class, id));
+        User incumbent = getById(id);
 
         if(isOwnerRequest(incumbent) || isAdminOrSupportRequest(incumbent)) {
             if(isAdminOrSupportRequest(incumbent)) {
-                patch = sanitizeForAdminOrSupport(patch);
+                sanitizeForAdminOrSupport(patch);
             }
             else {
-                patch = sanitizeForUser(patch);
+                sanitizeForUser(patch);
             }
 
             ObjectMapper objectMapper = new ObjectMapper();
             ObjectReader objectReader = objectMapper.readerForUpdating(incumbent);
             User updated = objectReader.readValue(objectMapper.writeValueAsString(patch));
 
-            return userRepository.save(updated);
+            return repository.save(updated);
         }
 
-        String message = String.format("Either this resource does not belong to you or you do not have the " +
-                "privileges required to modify this resource.");
+        String message = "Either this resource does not belong to you or you do not have the " +
+                "privileges required to modify this resource.";
         throw new AccessDeniedException("Request Denied", new Throwable(message));
-    }
-
-    @Transactional
-    public Role addRole(String id, Role role) {
-        User user = getById(id);
-        role.setRole(role.getScope(), role.getAction(), role.getTarget())
-                .setUser(user);
-
-        return roleRepository.save(role);
-    }
-
-    @Transactional
-    public void deleteRole(final String id, final String roleId) {
-        User user = getById(id);
-        Role role = user.getRoles()
-                .stream()
-                .filter(x -> x.getId().equals(roleId)).findFirst()
-                .orElseThrow(new PivotEntityNotFoundException(Role.class, id));
-
-        roleRepository.delete(role);
     }
 
     /**
      * Removes entries from map which are not allowed to be updated by the user
      *
      * @param map patch data
-     * @return Map<String, Object>
      */
-    public Map<String, Object> sanitizeForUser(Map<String, Object> map) {
+    private void sanitizeForUser(Map<String, Object> map) {
         map.remove("id");
         map.remove("groupId");
         map.remove("type");
@@ -149,11 +81,9 @@ public class UserService {
         map.remove("createdBy");
         map.remove("updatedAt");
         map.remove("updatedBy");
-
-        return map;
     }
 
-    public boolean isOwnerRequest(User user) {
+    private boolean isOwnerRequest(User user) {
         UserSession session = (UserSession) SecurityContextHolder
                 .getContext()
                 .getAuthentication()
@@ -166,19 +96,18 @@ public class UserService {
      * Removes entries from map which are not allowed to be updated by the user
      *
      * @param map patch data
-     * @return Map<String, Object>
      */
-    public Map<String, Object> sanitizeForAdminOrSupport(Map<String, Object> map) {
+    private void sanitizeForAdminOrSupport(Map<String, Object> map) {
         map.remove("id");
         map.remove("createdAt");
         map.remove("createdBy");
         map.remove("updatedAt");
         map.remove("updatedBy");
-        return map;
     }
 
-    public boolean isAdminOrSupportRequest(User user) {
-        UserSession session = (UserSession) SecurityContextHolder
+    private boolean isAdminOrSupportRequest(User user) {
+        UserSession session;
+        session = (UserSession) SecurityContextHolder
                 .getContext()
                 .getAuthentication()
                 .getPrincipal();
@@ -190,31 +119,33 @@ public class UserService {
         return user.getGroup().getId().equals(session.getTenantId())
                 && (session.getAccountType().equals(UserSession.Type.ADMIN) ||
                 session.getAccountType().equals(UserSession.Type.SUPPORT)) &&
-                session.getAuthorities().stream().anyMatch(roles::contains);
+                session.getAuthorities().stream().anyMatch(x -> roles.contains(x.getAuthority()));
     }
 
+    @Override
     @Transactional
     public void softDelete(String id) {
-        if(!userRepository.existsById(id)){
+        if (repository.existsById(id)) {
+            repository.softDeleteById(id);
+        } else {
             throw new PivotEntityNotFoundException(User.class, id);
         }
-
-        userRepository.softDeleteById(id);
     }
 
+    @Override
     @Transactional
     @PreAuthorize("hasRole('ROLE_SUPPORT_HARD_DELETE_USER')")
     public void hardDelete(String id) {
-        if(!userRepository.existsById(id)){
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+        } else {
             throw new PivotEntityNotFoundException(User.class, id);
         }
-
-        userRepository.deleteById(id);
     }
 
 
     @SuppressWarnings("Duplicates")
-    public static Set<String> getAdministrativeRoles() {
+    private static Set<String> getAdministrativeRoles() {
         Set<String> roles = new HashSet<>();
         roles.add(String.format("%s_%s_%s", ROLE_ADMIN, ADMIN, GLOBAL));
         roles.add(String.format("%s_%s_%s", ROLE_ADMIN, CREATE, GLOBAL));
@@ -227,7 +158,7 @@ public class UserService {
     }
 
     @SuppressWarnings("Duplicates")
-    public static Set<String> getSupportRoles() {
+    private static Set<String> getSupportRoles() {
         Set<String> roles = new HashSet<>();
         roles.add(String.format("%s_%s_%s", ROLE_SUPPORT, ADMIN, GLOBAL));
         roles.add(String.format("%s_%s_%s", ROLE_SUPPORT, CREATE, GLOBAL));
@@ -237,5 +168,26 @@ public class UserService {
         roles.add(String.format("%s_%s_%s", ROLE_SUPPORT, UPDATE, USERS));
 
         return roles;
+    }
+
+
+    @Transactional
+    public Role addRole(String id, Role role) throws Throwable {
+        User user = getById(id);
+        role.setRole(role.getScope(), role.getAction(), role.getTarget())
+                .setUser(user);
+
+        return roleRepository.save(role);
+    }
+
+    @Transactional
+    public void deleteRole(final String id, final String roleId) throws Throwable {
+        User user = getById(id);
+        Role role = user.getRoles()
+                .stream()
+                .filter(x -> x.getId().equals(roleId)).findFirst()
+                .orElseThrow(new PivotEntityNotFoundException(Role.class, id));
+
+        roleRepository.delete(role);
     }
 }
