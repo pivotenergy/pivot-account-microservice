@@ -140,6 +140,11 @@ public class Group extends BaseDomainEntity<Group> {
         return this;
     }
 
+    public Group addUser(User user) {
+        this.users.add(user.setGroup(this));
+        return this;
+    }
+
     public enum Type {
         ADMIN,
         CLIENT,

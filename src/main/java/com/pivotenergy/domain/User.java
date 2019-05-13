@@ -20,6 +20,7 @@
 
 package com.pivotenergy.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -93,8 +94,9 @@ public class User extends MultiTenantBaseDomainEntity<User> {
     private String password = null;
 
     @ManyToOne
-    @JoinColumn(name = "`group_id`", referencedColumnName = "`id`", insertable = false, updatable = false)
+    @JoinColumn(name = "`group_id`", referencedColumnName = "`id`")
     @JsonIgnore
+    @JsonBackReference
     private Group group;
 
     public String getLocale() {
@@ -196,6 +198,11 @@ public class User extends MultiTenantBaseDomainEntity<User> {
         return this;
     }
 
+    public User addRole(Role role) {
+        this.roles.add(role.setUser(this));
+        return this;
+    }
+
     public String getPassword() {
         return password;
     }
@@ -206,6 +213,14 @@ public class User extends MultiTenantBaseDomainEntity<User> {
         return this;
     }
 
+    public Group getGroup() {
+        return group;
+    }
+
+    public User setGroup(Group group) {
+        this.group = group;
+        return this;
+    }
 
     public enum Type {
         API,

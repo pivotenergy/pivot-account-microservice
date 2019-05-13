@@ -20,6 +20,7 @@
 
 package com.pivotenergy.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.NoArgsConstructor;
 import org.springframework.util.Assert;
@@ -52,8 +53,9 @@ public class Role extends MultiTenantBaseDomainEntity<Role> {
     private Target target;
 
     @ManyToOne
-    @JoinColumn(name = "`user_id`", referencedColumnName = "`id`", insertable = false, updatable = false)
+    @JoinColumn(name = "`user_id`", referencedColumnName = "`id`")
     @JsonIgnore
+    @JsonBackReference
     private User user;
 
     public String getRole() {

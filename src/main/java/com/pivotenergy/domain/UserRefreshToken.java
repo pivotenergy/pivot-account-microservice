@@ -1,5 +1,6 @@
 package com.pivotenergy.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -21,6 +22,7 @@ public class UserRefreshToken extends MultiTenantBaseDomainEntity<UserRefreshTok
     @ManyToOne
     @JoinColumn(name = "`user_id`", referencedColumnName = "`id`", insertable = false, updatable = false)
     @JsonIgnore
+    @JsonBackReference
     private User user;
 
     public String getToken() {
