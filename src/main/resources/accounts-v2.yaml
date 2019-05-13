@@ -1,0 +1,829 @@
+swagger: "3.0.0"
+info:
+  title: Account Service API
+  description: API for authentication and managing groups and users.
+  version: 1.0.0
+host: api.uat.pivotenergy.io
+basePath: /v2
+schemes:
+  - https
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - basicAuth: []
+  - bearerAuth: []
+paths:
+  /login:
+    post:
+      security:
+        - basicAuth: []
+      summary: "Change user password"
+      description: "Authenticates users and returns a JWT token"
+      operationId: "loginUser"
+      produces:
+        - "application/xml"
+        - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/TokenPair'
+          headers:
+            X-AUTH-TOKEN:
+              type: "string"
+              description: "Signed JWT token"
+            X-REFRESH-TOKEN:
+              type: "string"
+              description: "The refresh token, valid for 48 hours"
+        400:
+          description: "Invalid username/password supplied"
+  /logout/{refresh_token}:
+    delete:
+      summary: "Destroy session state related to JWT and refresh token"
+      operationId: "deleteUserById"
+      responses:
+          204:
+            description: "Resource deleted."
+  /refresh/{refresh_token}:
+    post:
+      summary: "Change user password"
+      description: "Authenticates users and returns a JWT token"
+      operationId: "loginUser"
+      produces:
+        - "application/xml"
+        - "application/json"
+      parameters:
+        - name: "refresh_token"
+          in: "path"
+          description: "The refresh token"
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/TokenPair'
+          headers:
+            X-AUTH-TOKEN:
+              type: "string"
+              description: "Signed JWT token"
+            X-REFRESH-TOKEN:
+              type: "string"
+              description: "The refresh token, valid for 48 hours"
+        400:
+          description: "Invalid refresh token supplied"
+  /groups:
+    get:
+      security:
+        - bearerAuth: []
+      summary: "Returns a collection of Resource."
+      description: "Returns a collection of Resource."
+      operationId: "getCollectionOfGroup"
+      produces:
+        - "application/json"
+        - "application/xml"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: '#/definitions/PagedOfGroup'
+        403:
+          description: "Action forbidden"
+          schema:
+            $ref: '#/definitions/ApiError'
+    post:
+      security:
+        - bearerAuth: []
+      summary: "create a Resource"
+      operationId: "createGroup"
+      consumes:
+        - "application/json"
+        - "application/xml"
+      produces:
+        - "application/xml"
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Body of Resource to create."
+          required: true
+          schema:
+            $ref: "#/definitions/Group"
+      responses:
+        202:
+          description: "Resource created"
+          schema:
+            $ref: '#/definitions/Group'
+        403:
+          description: "Action forbidden"
+        405:
+          description: "Invalid input"
+  /groups/metadata/types:
+    get:
+      security:
+        - bearerAuth: []
+      summary: "Returns a collection of Resource."
+      description: "Returns a collection of Resource."
+      operationId: "getCollectionOfGroup"
+      produces:
+        - "application/json"
+        - "application/xml"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: array
+            $ref: '#/definitions/GroupType'
+        403:
+          description: "Action forbidden"
+          schema:
+            $ref: '#/definitions/ApiError'
+  /groups/{group_id}:
+    get:
+      security:
+        - bearerAuth: []
+      summary: "Returns a Resource by id."
+      description: "Returns a Resource by id"
+      operationId: "getGroupById"
+      produces:
+        - "application/json"
+        - "application/xml"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: '#/definitions/Group'
+        403:
+          description: "Action forbidden."
+          schema:
+            $ref: '#/definitions/ApiError'
+        404:
+          description: "Resource not found."
+    put:
+      security:
+        - bearerAuth: []
+      summary: "Update a Resource by id."
+      operationId: "updateGroupById"
+      consumes:
+        - "application/json"
+        - "application/xml"
+      produces:
+        - "application/xml"
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Resource properties that need to be updated."
+          required: true
+          schema:
+            $ref: "#/definitions/Group"
+      responses:
+        202:
+          description: "Resource updated"
+          schema:
+            $ref: '#/definitions/Group'
+        403:
+          description: "Action forbidden."
+        404:
+          description: "Resource not found."
+        405:
+          description: "Invalid input."
+    delete:
+      security:
+        - bearerAuth: []
+      summary: "Delete Resource by id."
+      operationId: "deleteGroupById"
+      responses:
+        204:
+          description: "Resource deleted."
+        403:
+          description: "Action forbidden."
+        404:
+          description: "Resource not found."
+  /groups/{group_id}/users:
+    get:
+      security:
+        - bearerAuth: []
+      summary: "Returns a collection of Resource."
+      description: "Returns a collection of Resource."
+      operationId: "getCollectionOfGroupUsers"
+      produces:
+        - "application/json"
+        - "application/xml"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: '#/definitions/PagedOfUser'
+        403:
+          description: "Action forbidden"
+          schema:
+            $ref: '#/definitions/ApiError'
+    post:
+      security:
+        - bearerAuth: []
+      summary: "create a Resource"
+      operationId: "createGroupUser"
+      consumes:
+        - "application/json"
+        - "application/xml"
+      produces:
+        - "application/xml"
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Body of Resource to create."
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        201:
+          description: "Resource created"
+          schema:
+            $ref: '#/definitions/User'
+        403:
+          description: "Action forbidden"
+        405:
+          description: "Invalid input"
+  /users:
+    get:
+      security:
+        - bearerAuth: []
+      summary: "Returns a collection of Resource."
+      description: "Returns a collection of Resource for the group the current user belongs to
+      otherwise if the user is a global a admin or support user otherwise all users across all groups are returned"
+      operationId: "getCollectionOfUsers"
+      produces:
+        - "application/json"
+        - "application/xml"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: '#/definitions/PagedOfUser'
+        403:
+          description: "Action forbidden"
+          schema:
+            $ref: '#/definitions/ApiError'
+  /users/metadata/types:
+    get:
+      security:
+        - bearerAuth: []
+      summary: "Returns a collection of Resource."
+      description: "Returns a collection of Resource."
+      operationId: "getCollectionOfGroup"
+      produces:
+        - "application/json"
+        - "application/xml"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: array
+            $ref: '#/definitions/UserType'
+        403:
+          description: "Action forbidden"
+          schema:
+            $ref: '#/definitions/ApiError'
+  /users/metadata/roles/scopes:
+    get:
+      security:
+        - bearerAuth: []
+      summary: "Returns a collection of Resource."
+      description: "Returns a collection of Resource."
+      operationId: "getCollectionOfGroup"
+      produces:
+        - "application/json"
+        - "application/xml"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: array
+            $ref: '#/definitions/UserRoleScope'
+        403:
+          description: "Action forbidden"
+          schema:
+            $ref: '#/definitions/ApiError'
+  /users/metadata/roles/actions:
+    get:
+      security:
+        - bearerAuth: []
+      summary: "Returns a collection of Resource."
+      description: "Returns a collection of Resource."
+      operationId: "getCollectionOfGroup"
+      produces:
+        - "application/json"
+        - "application/xml"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: array
+            $ref: '#/definitions/UserRoleAction'
+        403:
+          description: "Action forbidden"
+          schema:
+            $ref: '#/definitions/ApiError'
+  /users/metadata/roles/targets:
+    get:
+      security:
+        - bearerAuth: []
+      summary: "Returns a collection of Resource."
+      description: "Returns a collection of Resource."
+      operationId: "getCollectionOfGroup"
+      produces:
+        - "application/json"
+        - "application/xml"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: array
+            $ref: '#/definitions/UserRoleAction'
+        403:
+          description: "Action forbidden"
+          schema:
+            $ref: '#/definitions/ApiError'
+  /users/{user_id}:
+    get:
+      security:
+        - bearerAuth: []
+      summary: "Returns a Resource by id."
+      description: "Returns a Resource by id"
+      operationId: "getUserById"
+      produces:
+        - "application/json"
+        - "application/xml"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: '#/definitions/User'
+        403:
+          description: "Action forbidden."
+          schema:
+            $ref: '#/definitions/ApiError'
+        404:
+          description: "Resource not found."
+    put:
+      security:
+        - bearerAuth: []
+      summary: "Update Resource by id."
+      operationId: "updateUserById"
+      consumes:
+        - "application/json"
+        - "application/xml"
+      produces:
+        - "application/xml"
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Resource properties that need to be updated."
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        202:
+          description: "Resource updated"
+          schema:
+            $ref: '#/definitions/User'
+        403:
+          description: "Action forbidden."
+        404:
+          description: "Resource not found."
+        405:
+          description: "Invalid input."
+    delete:
+      security:
+        - bearerAuth: []
+      summary: "Delete Resource by id."
+      operationId: "deleteUserById"
+      responses:
+        204:
+          description: "Resource deleted."
+        403:
+          description: "Action forbidden."
+        404:
+          description: "Resource not found."
+  /users/{user_id}/change-password:
+    post:
+      security:
+        - bearerAuth: []
+      summary: "Change user password"
+      operationId: "changeUserPassword"
+      consumes:
+        - "application/json"
+        - "application/xml"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Body of Resource to create."
+          required: true
+          schema:
+            $ref: "#/definitions/UserCredentials"
+      responses:
+        201:
+          description: "Action accepted"
+        403:
+          description: "Action forbidden"
+        405:
+          description: "Invalid input"
+  /users/{user_id}/reset-password:
+    post:
+      security:
+        - bearerAuth: []
+      summary: "Change user password"
+      description: "Sends user a onetime deep link to rest their password"
+      operationId: "resetUserPassword"
+      responses:
+        204:
+          description: "Action accepted"
+        403:
+          description: "Action forbidden"
+        405:
+          description: "Invalid input"
+  /users/{user_id}/roles:
+    post:
+      security:
+        - bearerAuth: []
+      summary: "create a Resource"
+      operationId: "createUserRole"
+      consumes:
+        - "application/json"
+        - "application/xml"
+      produces:
+        - "application/xml"
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Body of Resource to create."
+          required: true
+          schema:
+            $ref: "#/definitions/UserRole"
+      responses:
+        201:
+          description: "Resource created"
+          schema:
+            $ref: '#/definitions/UserRole'
+        403:
+          description: "Action forbidden"
+        405:
+          description: "Invalid input"
+  /users/{user_id}/roles/{role_id}:
+    delete:
+      security:
+        - bearerAuth: []
+      summary: "Delete Resource by id."
+      operationId: "deleteUserRoleById"
+      responses:
+        204:
+          description: "Resource deleted."
+        403:
+          description: "Action forbidden."
+        404:
+          description: "Resource not found."
+definitions:
+  User:
+    type: object
+    required:
+      - email
+      - firstName
+      - lastName
+      - type
+    properties:
+      id:
+        type: string
+        format: uuid
+        readOnly: true
+        example: "1f7d455b-74b7-4928-9877-8cb5d994d215"
+      email:
+        type: string
+        format: email
+        example: "joe.smith@pivotenergy.com"
+      password:
+        type: "string"
+        example: "secret-password"
+      locale:
+        type: string
+        example: "en-US"
+      firstName:
+        type: string
+        example: "Joe"
+      lastName:
+        type: string
+        example: "Smith"
+      type:
+        type: string
+        example: "USER"
+        $ref: '#/definitions/UserType'
+      enabled:
+        type: boolean
+        example: "true"
+      locked:
+        type: boolean
+        example: "false"
+      expired:
+        type: boolean
+        example: "false"
+      failedLoginAttempts:
+        type: integer
+        example: 0
+      lastLoginAttempt:
+        type: string
+        format: "date-time"
+      roles:
+        type: array
+        readOnly: true
+        uniqueItems: true
+        items:
+          $ref: '#/definitions/UserRole'
+  UserType:
+    type: object
+    enum:
+      - "USER"
+      - "ADMIN"
+      - "SUPPORT"
+      - "API"
+  UserRole:
+    type: object
+    required:
+      - scope
+      - action
+      - target
+    properties:
+      id:
+        type: string
+        format: uuid
+        readOnly: true
+        example: "1f7d455b-74b7-4928-9877-8cb5d994d215"
+      role:
+        type: string
+        readOnly: true
+      scope:
+        type: string
+        example: ROLE_USER
+        $ref: '#/definitions/UserRoleScope'
+      action:
+        type: string
+        example: ADMIN
+        $ref: '#/definitions/UserRoleAction'
+      target:
+        type: string
+        example: GLOBAL
+        $ref: '#/definitions/UserRoleTarget'
+  UserRoleScope:
+    type: object
+    enum:
+      - "ROLE_USER"
+      - "ROLE_ADMIN"
+      - "ROLE_SUPPORT"
+      - "ROLE_DEVELOPER"
+      - "ROLE_API"
+  UserRoleAction:
+    type: object
+    enum:
+      - "ADMIN"
+      - "CREATE"
+      - "READ"
+      - "UPDATE"
+      - "SOFT_DELETE"
+      - "HARD_DELETE"
+  UserRoleTarget:
+    type: object
+    enum:
+      - "GLOBAL"
+      - "USERS"
+      - "BUILDINGS"
+      - "MEASURABLES"
+      - "OPPORTUNITIES"
+  Group:
+    type: object
+    required:
+      - name
+      - type
+    properties:
+      id:
+        type: string
+        format: uuid
+        readOnly: true
+        example: "3026bcbd-bfad-4060-973a-ba82e46a1505"
+      name:
+        type: string
+        example: "PivotEnergy"
+        minimum: 4
+      logoImage:
+        type: string
+        example: "https://pivotenergy.com/images/company_log.gif"
+        format: uri
+      companyName:
+        type: string
+        example: "Pivot Energy Services INC."
+        description: "Legal name"
+      companyWebsite:
+        type: string
+        example: "https://www.pivotenergy.com"
+        format: hostname
+      contactEmail:
+        type: string
+        example: "contact@pivotenergy.com"
+        format: email
+      phoneNumber:
+        type: string
+        example: "55 555 555 5555"
+        maxLength: 20
+        pattern: '/^((\+\d{1,3}(-| )?\(?\d\)?(-| )?\d{1,5})|(\(?\d{2,6}\)?))(-| )?(\d{3,4})(-| )?(\d{4})(( x| ext)\d{1,5}){0,1}$/'
+      type:
+        type: string
+        $ref: '#/definitions/GroupType'
+      users:
+        type: array
+        readOnly: true
+        items:
+          $ref: '#/definitions/User'
+  GroupType:
+    type: object
+    enum:
+      - "CLIENT"
+      - "ADMIN"
+      - "SUPPORT"
+  Sort:
+    type: object
+    properties:
+      sorted:
+        type: boolean
+      unsorted:
+        type: boolean
+      empty:
+        type: boolean
+  Pageable:
+    type: object
+    properties:
+      sort:
+        type: object
+        $ref: '#/definitions/Sort'
+      pageSize:
+        type: integer
+        minimum: 0
+        example: 10
+      pageNumber:
+        type: integer
+        minimum: 0
+        example: 10
+      offset:
+        type: integer
+        minimum: 0
+        example: 10
+      paged:
+        type: boolean
+      unpaged:
+        type: boolean
+  PagedOfUser:
+    type: object
+    properties:
+      content:
+        type: array
+        $ref: '#/definitions/User'
+      pageable:
+        type: object
+        $ref: '#/definitions/Pageable'
+      last:
+        description: Indicates if you are viewing the last page of data
+        type: boolean
+        example: true
+      totalPages:
+        description: Total number of pages
+        type: integer
+        minimum: 0
+        example: 2
+      totalElements:
+        description: Total number of items
+        type: integer
+        minimum: 0
+        example: 20
+      first:
+        description: Indicates if you are viewing the first page of data
+        type: boolean
+        example: true
+      sort:
+        type: object
+        $ref: '#/definitions/Sort'
+      numberOfElements:
+        description: Number of elements in page
+        type: integer
+        minimum: 0
+        example: 10
+      size:
+        description: Number of elements in page
+        type: integer
+        minimum: 0
+        example: 10
+      number:
+        description: Current page number
+        type: integer
+        minimum: 0
+        example: 0
+      empty:
+        description: Indicates if the page set is empty
+        type: boolean
+  PagedOfGroup:
+    type: object
+    properties:
+      content:
+        type: array
+        $ref: '#/definitions/Group'
+      pageable:
+        type: object
+        $ref: '#/definitions/Pageable'
+      last:
+        description: Indicates if you are viewing the last page of data
+        type: boolean
+        example: true
+      totalPages:
+        description: Total number of pages
+        type: integer
+        minimum: 0
+        example: 2
+      totalElements:
+        description: Total number of items
+        type: integer
+        minimum: 0
+        example: 20
+      first:
+        description: Indicates if you are viewing the first page of data
+        type: boolean
+        example: true
+      sort:
+        type: object
+        $ref: '#/definitions/Sort'
+      numberOfElements:
+        description: Number of elements in page
+        type: integer
+        minimum: 0
+        example: 10
+      size:
+        description: Number of elements in page
+        type: integer
+        minimum: 0
+        example: 10
+      number:
+        description: Current page number
+        type: integer
+        minimum: 0
+        example: 0
+      empty:
+        description: Indicates if the page set is empty
+        type: boolean
+  UserCredentials:
+    type: object
+    properties:
+      credential:
+        description: "the credential / password to set"
+        type: string
+      verification:
+        description: "the verification string which should be equal to the credential"
+        type: string
+  ApiError:
+    type: object
+    properties:
+      requestId:
+        description: Unique requst tracking id
+        type: string
+        format: uuid
+      status:
+        description: Http status code
+        type: integer
+      timestamp:
+        type: string
+        format: 'date-time'
+      message:
+        description: Application friendly message
+        type: string
+      debugMessage:
+        description: Technical message
+        type: string
+  TokenPair:
+    type: object
+    properties:
+      token_type:
+        description: "The token type prefix"
+        type: string
+        example: "Bearer"
+      access_token:
+        description: "Base64 encoded JWT token which includes the user profile"
+        type: string
+      expires_in_seconds:
+        type: integer
+      refresh_token:
+        description: "Refresh token valid for 48 hours"
+        type: string
