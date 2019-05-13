@@ -46,7 +46,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public User getUserById(String id) {
+    public User getById(String id) {
         User user = userRepository.findById(id)
                 .orElseThrow(new PivotEntityNotFoundException(User.class, id));
 
@@ -67,12 +67,12 @@ public class UserService {
     }
 
     @Transactional
-    public User saveUser(User user) {
+    public User create(User user) {
         return userRepository.save(user);
     }
 
     @Transactional
-    public User updateUser(String id, User update) {
+    public User update(String id, User update) {
         if(!userRepository.existsById(id)){
             throw new PivotEntityNotFoundException(User.class, id);
         }
@@ -81,7 +81,7 @@ public class UserService {
     }
 
     @Transactional
-    public User patchUser(String id, Map<String, Object> patch) throws IOException {
+    public User patch(String id, Map<String, Object> patch) throws IOException {
 
         User incumbent = userRepository.findById(id)
                 .orElseThrow(new PivotEntityNotFoundException(User.class, id));
@@ -107,8 +107,8 @@ public class UserService {
     }
 
     @Transactional
-    public Role addRoleToUser(String id, Role role) {
-        User user = getUserById(id);
+    public Role addRole(String id, Role role) {
+        User user = getById(id);
         role.setRole(role.getScope(), role.getAction(), role.getTarget())
                 .setUser(user);
 
@@ -116,8 +116,8 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUserRole(final String id, final String roleId) {
-        User user = getUserById(id);
+    public void deleteRole(final String id, final String roleId) {
+        User user = getById(id);
         Role role = user.getRoles()
                 .stream()
                 .filter(x -> x.getId().equals(roleId)).findFirst()
@@ -194,7 +194,7 @@ public class UserService {
     }
 
     @Transactional
-    public void softDeleteUser(String id) {
+    public void softDelete(String id) {
         if(!userRepository.existsById(id)){
             throw new PivotEntityNotFoundException(User.class, id);
         }
@@ -203,8 +203,8 @@ public class UserService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_USER_HARD_DELETE_USER')")
-    public void hardDeleteUser(String id) {
+    @PreAuthorize("hasRole('ROLE_SUPPORT_HARD_DELETE_USER')")
+    public void hardDelete(String id) {
         if(!userRepository.existsById(id)){
             throw new PivotEntityNotFoundException(User.class, id);
         }

@@ -359,7 +359,7 @@ paths:
         - bearerAuth: []
       summary: "Returns a Resource by id."
       description: "Returns a Resource by id"
-      operationId: "getUserById"
+      operationId: "getById"
       produces:
         - "application/json"
         - "application/xml"
