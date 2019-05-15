@@ -95,7 +95,7 @@ public class User extends MultiTenantBaseDomainEntity<User> {
     private String password = null;
 
     @ManyToOne
-    @JoinColumn(name = "`group_id`", referencedColumnName = "`id`")
+    @JoinColumn(name = "groupId")
     @JsonIgnore
     @JsonBackReference
     private Group group;

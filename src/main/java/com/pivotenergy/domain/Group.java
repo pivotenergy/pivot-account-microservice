@@ -34,6 +34,7 @@ import java.util.Set;
 
 @SuppressWarnings("unused")
 @Entity
+@Table(name = "user_group")
 @NoArgsConstructor
 public class Group extends BaseDomainEntity<Group> {
     @Size(min = 4, message="The group name must be at least 4 character long")

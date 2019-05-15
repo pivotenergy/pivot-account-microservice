@@ -53,7 +53,7 @@
         <lombok.version>1.18.0</lombok.version>
         <h2.version>1.4.197</h2.version>
         <pivot-security-core>0.1.0-SNAPSHOT</pivot-security-core>
-        <pivot-spring-data-core.version>0.1.0-SNAPSHOT</pivot-spring-data-core.version>
+        <pivot-spring-data-core>0.1.0-SNAPSHOT</pivot-spring-data-core>
     </properties>
 
     <dependencies>
@@ -80,10 +80,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-rest</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-config</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -131,7 +127,7 @@
         <dependency>
             <groupId>com.pivotenergy</groupId>
             <artifactId>pivot-spring-data-core</artifactId>
-            <version>${pivot-spring-data-core.version}</version>
+            <version>${pivot-spring-data-core}</version>
         </dependency>
 
         <!-- test -->

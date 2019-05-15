@@ -88,7 +88,7 @@ public class AuthenticationService {
      * @return TokenPair
      */
     public TokenPair loginUser(UserLogin userLogin) {
-        return userRepository.findByUserEmail(userLogin.getEmail())
+        return userRepository.findByEmail(userLogin.getEmail())
                 .map(user -> {
 
                     if(user.getGroup().getDeleted().equals(Boolean.TRUE)) {

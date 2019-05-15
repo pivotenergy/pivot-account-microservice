@@ -135,5 +135,5 @@ public interface UserRepository extends PagingAndSortingRepository<User, String>
 
 
     @Transactional(readOnly = true)
-    Optional<User> findByUserEmail(String email);
+    Optional<User> findByEmail(String email);
 }

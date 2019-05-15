@@ -35,7 +35,7 @@ import java.util.Optional;
 
 @Repository
 public interface GroupRepository extends PagingAndSortingRepository<Group, String> {
-    Optional<Group> findByAccountEmail(String email);
+    Optional<Group> findByContactEmail(String email);
 
 
     /**

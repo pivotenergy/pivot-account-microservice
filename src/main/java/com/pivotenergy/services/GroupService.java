@@ -88,9 +88,9 @@ public class GroupService extends BaseService<Group, GroupRepository> {
     public void initializeBaseUsers() {
 
         Group group;
-        if(repository.findByAccountEmail("axle@pivotenergy.com").isPresent()) {
+        if(repository.findByContactEmail("axle@pivotenergy.com").isPresent()) {
             LOG.info("Found account for base users");
-            group = repository.findByAccountEmail("axle@pivotenergy.com").get();
+            group = repository.findByContactEmail("axle@pivotenergy.com").get();
         }
         else {
             LOG.info("Creating account for base users");
@@ -102,7 +102,7 @@ public class GroupService extends BaseService<Group, GroupRepository> {
 
         }
 
-        if(!userRepository.findByUserEmail("app-admin@metro.io").isPresent()) {
+        if(!userRepository.findByEmail("app-admin@metro.io").isPresent()) {
             LOG.info("Creating base users");
             userRepository.save(new User()
                     .setGroup(group)

@@ -51,7 +51,6 @@ public class Role extends MultiTenantBaseDomainEntity<Role> {
     private Target target;
 
     @ManyToOne
-    @JoinColumn(name = "`user_id`", referencedColumnName = "`id`")
     @JsonIgnore
     @JsonBackReference
     private User user;

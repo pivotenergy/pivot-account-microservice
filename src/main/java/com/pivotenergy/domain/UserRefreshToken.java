@@ -16,7 +16,7 @@ import java.util.Date;
 public class UserRefreshToken extends MultiTenantBaseDomainEntity<UserRefreshToken> {
 
     @NotEmpty
-    @Column(name = "token", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String token;
 
     @Column(nullable = false)
@@ -24,7 +24,6 @@ public class UserRefreshToken extends MultiTenantBaseDomainEntity<UserRefreshTok
     private Date expiresAt;
 
     @ManyToOne
-    @JoinColumn(name = "`user_id`", referencedColumnName = "`id`", insertable = false, updatable = false)
     @JsonIgnore
     @JsonBackReference
     private User user;

@@ -117,8 +117,8 @@ public class UserService extends BaseService<User, UserRepository> {
         roles.addAll(getAdministrativeRoles());
 
         return user.getGroup().getId().equals(session.getTenantId())
-                && (session.getAccountType().equals(UserSession.Type.ADMIN) ||
-                session.getAccountType().equals(UserSession.Type.SUPPORT)) &&
+                && (session.getType().equals(UserSession.Type.ADMIN) ||
+                session.getType().equals(UserSession.Type.SUPPORT)) &&
                 session.getAuthorities().stream().anyMatch(x -> roles.contains(x.getAuthority()));
     }
 
