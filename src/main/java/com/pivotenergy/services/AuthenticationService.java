@@ -122,8 +122,8 @@ public class AuthenticationService {
         userSession.setUserEmail(user.getEmail());
         userSession.setFirstName(user.getFirstName());
         userSession.setLastName(user.getLastName());
-        userSession.setAccountId(user.getGroup().getId());
-        userSession.setAccountType(UserSession.Type.valueOf(user.getType().toString()));
+        userSession.setGroupId(user.getGroup().getId());
+        userSession.setType(UserSession.Type.valueOf(user.getType().toString()));
         userSession.setLocale(user.getLocale());
         userSession.setRoles(user.getRoles()
                 .stream()

@@ -52,7 +52,7 @@
         <maven-surefile-plugin.version>2.20.1</maven-surefile-plugin.version>
         <lombok.version>1.18.0</lombok.version>
         <h2.version>1.4.197</h2.version>
-        <authentication-library.version>1.0.5-SNAPSHOT</authentication-library.version>
+        <pivot-security-core>0.1.0-SNAPSHOT</pivot-security-core>
         <pivot-spring-data-core.version>0.1.0-SNAPSHOT</pivot-spring-data-core.version>
     </properties>
 
@@ -125,8 +125,8 @@
         <!-- pivotenergy libraries -->
         <dependency>
             <groupId>com.pivotenergy</groupId>
-            <artifactId>authentication-library</artifactId>
-            <version>${authentication-library.version}</version>
+            <artifactId>pivot-security-core</artifactId>
+            <version>${pivot-security-core}</version>
         </dependency>
         <dependency>
             <groupId>com.pivotenergy</groupId>

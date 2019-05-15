@@ -42,7 +42,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, String>
      */
     @Override
     @Transactional(readOnly = true)
-    @Query("SELECT COUNT(o) FROM User o WHERE o.deleted = false AND o.groupId = ?#{principal.getTenantId()}")
+    @Query("SELECT COUNT(o) FROM User o WHERE o.deleted = false AND o.groupId = ?#{authentication.tenantId}")
     long count();
 
     /**
@@ -55,7 +55,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, String>
     @Override
     @Transactional(readOnly = true)
     @Query("SELECT CASE WHEN COUNT(o) > 0 THEN true ELSE false END FROM User o " +
-            "WHERE o.deleted = false AND o.groupId = ?#{principal.getTenantId()}")
+            "WHERE o.deleted = false AND o.groupId = ?#{authentication.tenantId}")
     boolean existsById(String id);
 
     /**
@@ -66,7 +66,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, String>
      */
     @Override
     @Modifying
-    @Query("DELETE FROM User o WHERE o.id = ?1 AND o.groupId = ?#{principal.getTenantId()}")
+    @Query("DELETE FROM User o WHERE o.id = ?1 AND o.groupId = ?#{authentication.tenantId}")
     void deleteById(String id);
 
     /**
@@ -77,7 +77,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, String>
      */
     @Modifying
     @Transactional(readOnly = true)
-    @Query("UPDATE User o SET o.deleted = true WHERE o.id = ?1 AND o.groupId = ?#{principal.getTenantId()}")
+    @Query("UPDATE User o SET o.deleted = true WHERE o.id = ?1 AND o.groupId = ?#{authentication.tenantId}")
     void softDeleteById(String id);
 
     /**
@@ -85,7 +85,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, String>
      */
     @Override
     @Modifying
-    @Query("DELETE FROM User o WHERE o.groupId = ?#{principal.getTenantId()}")
+    @Query("DELETE FROM User o WHERE o.groupId = ?#{authentication.tenantId}")
     void deleteAll();
 
 
@@ -96,7 +96,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, String>
      */
     @Override
     @Transactional(readOnly = true)
-    @Query("SELECT o FROM User o WHERE o.deleted = false AND o.groupId  = ?#{principal.getTenantId()}")
+    @Query("SELECT o FROM User o WHERE o.deleted = false AND o.groupId  = ?#{authentication.tenantId}")
     Iterable<User> findAll(Sort sort);
 
 
@@ -107,7 +107,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, String>
      */
     @Override
     @Transactional(readOnly = true)
-    @Query("SELECT o FROM User o WHERE o.deleted = false AND o.groupId  = ?#{principal.getTenantId()}")
+    @Query("SELECT o FROM User o WHERE o.deleted = false AND o.groupId  = ?#{authentication.tenantId}")
     Iterable<User> findAll();
 
 
@@ -118,7 +118,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, String>
      */
     @Override
     @Transactional(readOnly = true)
-    @Query("SELECT o FROM User o WHERE o.deleted = false AND o.groupId = ?#{principal.getTenantId()}")
+    @Query("SELECT o FROM User o WHERE o.deleted = false AND o.groupId = ?#{authentication.tenantId}")
     Page<User> findAll(Pageable pageable);
 
     /**
@@ -130,7 +130,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, String>
      */
     @Override
     @Transactional(readOnly = true)
-    @Query("SELECT o FROM User o WHERE o.deleted = false AND o.id = ?1 AND o.groupId = ?#{principal.getTenantId()}")
+    @Query("SELECT o FROM User o WHERE o.deleted = false AND o.id = ?1 AND o.groupId = ?#{authentication.tenantId}")
     Optional<User> findById(String id);
 
 

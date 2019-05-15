@@ -40,7 +40,7 @@ public interface RoleRepository extends PagingAndSortingRepository<Role, String>
      */
     @Override
     @Transactional(readOnly = true)
-    @Query("SELECT COUNT(o) FROM Role o WHERE o.deleted = false AND o.groupId = ?#{principal.getTenantId()}")
+    @Query("SELECT COUNT(o) FROM Role o WHERE o.deleted = false AND o.groupId = ?#{authentication.tenantId}")
     long count();
 
     /**
@@ -53,7 +53,7 @@ public interface RoleRepository extends PagingAndSortingRepository<Role, String>
     @Override
     @Transactional(readOnly = true)
     @Query("SELECT CASE WHEN COUNT(o) > 0 THEN true ELSE false END FROM Role o " +
-            "WHERE o.id = ?1 AND o.deleted = false AND o.groupId = ?#{principal.getTenantId()}")
+            "WHERE o.id = ?1 AND o.deleted = false AND o.groupId = ?#{authentication.tenantId}")
     boolean existsById(String id);
 
     /**
@@ -64,7 +64,7 @@ public interface RoleRepository extends PagingAndSortingRepository<Role, String>
      */
     @Override
     @Modifying
-    @Query("DELETE FROM Role o WHERE o.id = ?1 AND o.groupId = ?#{principal.getTenantId()}")
+    @Query("DELETE FROM Role o WHERE o.id = ?1 AND o.groupId = ?#{authentication.tenantId}")
     void deleteById(String id);
 
     /**
@@ -75,7 +75,7 @@ public interface RoleRepository extends PagingAndSortingRepository<Role, String>
      * @throws IllegalArgumentException in case the given {@code id} is {@literal null}
      */
     @Modifying
-    @Query("DELETE FROM Role o WHERE o.id = ?1 AND o.user.id = ?2 AND o.groupId = ?#{principal.getTenantId()}")
+    @Query("DELETE FROM Role o WHERE o.id = ?1 AND o.user.id = ?2 AND o.groupId = ?#{authentication.tenantId}")
     void deleteByIdAndUserId(String id, String userId);
 
     /**
@@ -83,7 +83,7 @@ public interface RoleRepository extends PagingAndSortingRepository<Role, String>
      */
     @Override
     @Modifying
-    @Query("DELETE FROM Role o WHERE o.groupId = ?#{principal.getTenantId()}")
+    @Query("DELETE FROM Role o WHERE o.groupId = ?#{authentication.tenantId}")
     void deleteAll();
 
     /**
@@ -95,6 +95,6 @@ public interface RoleRepository extends PagingAndSortingRepository<Role, String>
      */
     @Override
     @Transactional(readOnly = true)
-    @Query("SELECT o FROM Role o WHERE o.deleted = false AND o.id = ?1 AND o.groupId = ?#{principal.getTenantId()}")
+    @Query("SELECT o FROM Role o WHERE o.deleted = false AND o.id = ?1 AND o.groupId = ?#{authentication.tenantId}")
     Optional<Role> findById(String id);
 }
