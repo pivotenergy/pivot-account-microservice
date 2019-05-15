@@ -22,6 +22,7 @@ package com.pivotenergy.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,51 +40,43 @@ import java.util.Set;
 
 @SuppressWarnings("unused")
 @Entity
+@Getter
 @NoArgsConstructor
 public class User extends MultiTenantBaseDomainEntity<User> {
     private static final PasswordEncoder ENCODER = new BCryptPasswordEncoder();
 
     @NotBlank
-    @Column(name = "`locale`", nullable = false, length = 8)
     private String locale;
 
     @Email
     @NotBlank
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(unique = true)
     private String email;
 
     @NotBlank
-    @Column(name = "first_name", nullable = false)
     private String firstName;
 
     @NotBlank
-    @Column(name = "last_name", nullable = false)
     private String lastName;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "`type`", nullable = false)
     private Type type = Type.USER;
 
     @NotNull
-    @Column(name = "`enabled`", nullable = false)
     private Boolean enabled = false;
 
     @NotNull
-    @Column(name = "`locked`", nullable = false)
     private Boolean locked = false;
 
     @NotNull
-    @Column(name = "`expired`", nullable = false)
     private Boolean expired = false;
 
     @NotNull
-    @Column(name = "failed_login_attempts", nullable = false)
     private Integer failedLoginAttempts = 0;
 
     @Past
     @Temporal(value= TemporalType.TIMESTAMP)
-    @Column(name = "last_login_attempt")
     private Date lastLoginAttempt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -91,7 +84,6 @@ public class User extends MultiTenantBaseDomainEntity<User> {
     private Set<Role> roles = new HashSet<>();
 
     @NotBlank
-    @Column(name = "password", nullable = false)
     private String password = null;
 
     @ManyToOne
@@ -100,17 +92,9 @@ public class User extends MultiTenantBaseDomainEntity<User> {
     @JsonBackReference
     private Group group;
 
-    public String getLocale() {
-        return locale;
-    }
-
     public User setLocale(String locale) {
         this.locale = locale;
         return this;
-    }
-
-    public String getEmail() {
-        return email;
     }
 
     public User setEmail(String email) {
@@ -118,17 +102,9 @@ public class User extends MultiTenantBaseDomainEntity<User> {
         return this;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
-
     public User setFirstName(String firstName) {
         this.firstName = firstName;
         return this;
-    }
-
-    public String getLastName() {
-        return lastName;
     }
 
     public User setLastName(String lastName) {
@@ -136,17 +112,9 @@ public class User extends MultiTenantBaseDomainEntity<User> {
         return this;
     }
 
-    public Type getType() {
-        return type;
-    }
-
     public User setType(Type type) {
         this.type = type;
         return this;
-    }
-
-    public Boolean getEnabled() {
-        return enabled;
     }
 
     public User setEnabled(Boolean enabled) {
@@ -154,17 +122,9 @@ public class User extends MultiTenantBaseDomainEntity<User> {
         return this;
     }
 
-    public Boolean getLocked() {
-        return locked;
-    }
-
     public User setLocked(Boolean locked) {
         this.locked = locked;
         return this;
-    }
-
-    public Boolean getExpired() {
-        return expired;
     }
 
     public User setExpired(Boolean expired) {
@@ -172,26 +132,14 @@ public class User extends MultiTenantBaseDomainEntity<User> {
         return this;
     }
 
-    public Integer getFailedLoginAttempts() {
-        return failedLoginAttempts;
-    }
-
     public User setFailedLoginAttempts(Integer failedLoginAttempts) {
         this.failedLoginAttempts = failedLoginAttempts;
         return this;
     }
 
-    public Date getLastLoginAttempt() {
-        return lastLoginAttempt;
-    }
-
     public User setLastLoginAttempt(Date lastLoginAttempt) {
         this.lastLoginAttempt = lastLoginAttempt;
         return this;
-    }
-
-    public Set<Role> getRoles() {
-        return roles;
     }
 
     public User setRoles(Set<Role> roles) {
@@ -204,18 +152,10 @@ public class User extends MultiTenantBaseDomainEntity<User> {
         return this;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public User setPassword(String password) {
         Assert.notNull(password, "password cannot be null");
         this.password = ENCODER.encode(password);
         return this;
-    }
-
-    public Group getGroup() {
-        return group;
     }
 
     public User setGroup(Group group) {

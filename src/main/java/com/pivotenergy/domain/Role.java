@@ -37,17 +37,14 @@ public class Role extends MultiTenantBaseDomainEntity<Role> {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "scope", nullable = false, length = 128)
     private Scope scope;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "action", nullable = false, length = 128)
     private Action action;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "target", nullable = false, length = 128)
     private Target target;
 
     @ManyToOne
